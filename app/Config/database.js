@@ -17,4 +17,6 @@ db.on('open', () => {
   console.log("Connected successfully to the database");
 })
 
+mongoose.Promise = global.Promise;
+
 module.exports = mongoose;

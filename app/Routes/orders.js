@@ -8,7 +8,7 @@ const Product = require('../Models/Product');
 router.get("/", (req, res) => {
   Order
     .find()
-    .populate('Product', '_id name price')
+    .populate('product', '_id name price')
     .exec()
     .then(result => {
       console.log(result);
@@ -41,10 +41,8 @@ router.get("/", (req, res) => {
 router.get("/:orderId", (req, res) => {
   const id = req.params.orderId;
   Order
-    .findById({
-      _id: id
-    })
-    .populate('Product', '_id name price')
+    .findById(id)
+    .populate('product', '_id name price')
     .exec()
     .then(result => {
       if (!result) {
@@ -80,9 +78,7 @@ router.get("/:orderId", (req, res) => {
 
 router.post("/", (req, res) => {
   Product
-    .findById({
-      _id: req.body.productId
-    })
+    .findById(req.body.productId)
     .exec()
     .then((result) => {
       if (!result) {
@@ -97,22 +93,23 @@ router.post("/", (req, res) => {
         quantity: req.body.quantity
       });
 
-      return order.save();
-    })
-    .then((result) => {
-      console.log(result);
-      res.status(201).json({
-        message: 'Order created successfully',
-        createdOrder: {
-          id: result._id,
-          productId: result.product,
-          quantity: result.quantity
-        }
-      })
+      order
+        .save()
+        .then((result) => {
+          console.log(result);
+          res.status(201).json({
+            message: 'Order created successfully',
+            createdOrder: {
+              id: result._id,
+              productId: result.product,
+              quantity: result.quantity
+            }
+          })
+        })
     })
     .catch((error) => {
       console.error(error);
-      res.status(500).json({
+      return res.status(500).json({
         error: {
           message: error.message
         }
@@ -120,8 +117,8 @@ router.post("/", (req, res) => {
     })
 });
 
-router.put('/:productId', (req, res) => {
-  const id = req.params.productId;
+router.put('/:orderId', (req, res) => {
+  const id = req.params.orderId;
 
   const updateOptions = {}
 
@@ -129,7 +126,7 @@ router.put('/:productId', (req, res) => {
     updateOptions[updateOpt.propName] = updateOpt.value;
   }
 
-  Product
+  Order
     .updateOne({
       _id: id
     }, {
@@ -139,11 +136,11 @@ router.put('/:productId', (req, res) => {
     .then(result => {
       console.log(result);
       res.status(200).json({
-        message: 'Product updated successfully',
+        message: 'Order updated successfully',
         request: {
           type: 'GET',
-          description: 'Get product detail with the given ID',
-          url: 'http://localhost:3000/products/' + id
+          description: 'Get order detail with the given ID',
+          url: 'http://localhost:3000/orders/' + id
         }
       })
     })
@@ -157,10 +154,10 @@ router.put('/:productId', (req, res) => {
     });
 });
 
-router.delete('/:productId', (req, res) => {
-  const id = req.params.productId;
+router.delete('/:orderId', (req, res) => {
+  const id = req.params.orderId;
 
-  Product
+  Order
     .remove({
       _id: id
     })
@@ -168,11 +165,11 @@ router.delete('/:productId', (req, res) => {
     .then(result => {
       console.log(result);
       res.status(200).json({
-        message: 'Product deleted successfully',
+        message: 'Order deleted successfully',
         request: {
           type: 'GET',
-          description: 'Get all products entries',
-          url: 'http://localhost:3000/products'
+          description: 'Get all orders entries',
+          url: 'http://localhost:3000/orders'
         }
       })
     })
