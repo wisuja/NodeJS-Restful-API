@@ -46,7 +46,7 @@ router.get("/:orderId", (req, res) => {
     .exec()
     .then(result => {
       if (!result) {
-        res.status(404).json({
+        return res.status(404).json({
           message: 'Product not found'
         });
       };
