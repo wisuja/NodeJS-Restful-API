@@ -4,6 +4,10 @@ const app = express();
 
 const productRoutes = require('./Routes/products');
 const orderRoutes = require('./Routes/orders');
+const userRoutes = require('./Routes/users');
+
+// Static
+app.use('/uploads', express.static("./public/uploads/"));
 
 // Middlewares
 app.use(morgan('dev'));
@@ -31,6 +35,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/products', productRoutes);
 app.use('/orders', orderRoutes);
+app.use('/users', userRoutes);
 
 // Error Handling
 app.use((req, res, next) => {
